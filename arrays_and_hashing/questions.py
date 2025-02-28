@@ -82,6 +82,7 @@ def productExceptSelf(nums):
 
 
 def validSudoku(board):
+    # Complexity: O(n^2) time and O(3n) space
     # Declare variables
     hashmap_row = defaultdict(int)
     hashmap_col = defaultdict(int)
@@ -125,4 +126,65 @@ def validSudoku(board):
                     hashmap_3x3[board[i+k][j+l]] = 1
             hashmap_3x3 = defaultdict(int)
 
+    return True
+
+
+'''
+    Given an array of integers nums, return the length of the longest consecutive sequence of elements that can be formed.
+
+    A consecutive sequence is a sequence of elements in which each element is exactly 1 greater than the previous element. The elements do not have to be consecutive in the original array.
+
+    You must write an algorithm that runs in O(n) time.
+'''
+
+
+def longestConsecutiveSequence(nums: list[int]):
+    nums_hash = {number: 1 for number in nums}
+    max_count = 0
+    # Iterate through the array and identify if the given number is a starting point for some sequence.
+    for number in nums:
+        if not nums_hash.get(number - 1):
+            count = 1
+            while nums_hash.get(number + count):
+                count += 1
+            if max_count < count:
+                max_count = count
+    return max_count
+
+
+''' 
+    Valid Palindrome
+'''
+
+
+def validPalindrome(s: str):
+    s = s.lower()
+    s = "".join(s.split(" "))
+
+    r = len(s) - 1
+    l = 0
+    while l < r:
+        # Check if alphanumeric.
+        if not (
+            (s[l] >= 'A' and s[l] <= 'Z')
+                or
+            (s[l] >= 'a' and s[l] <= 'z')
+                or
+            (s[l] >= '0' and s[l] <= '9')
+        ):
+            l += 1
+            continue
+        if not (
+            (s[r] >= 'A' and s[r] <= 'Z')
+                or
+            (s[r] >= 'a' and s[r] <= 'z')
+                or
+            (s[r] >= '0' and s[r] <= '9')
+        ):
+            r -= 1
+            continue
+        if s[l] != s[r]:
+            return False
+        l += 1
+        r -= 1
     return True
