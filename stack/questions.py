@@ -204,3 +204,34 @@ def carFleets(target: int, position: list[int], speed: list[int]):
 print(carFleets(target=10,
                 position=[0, 4, 2],
                 speed=[2, 1, 3]))
+
+
+'''
+Generate Parentheses
+
+You are given an integer n. Return all well-formed parentheses strings that you can generate with n pairs of parentheses.
+'''
+
+def generateParenthesis(n: int) -> list[str]:
+    final = []
+    def backtrack(openCount, closeCount, acc):
+        if openCount == closeCount == n:
+            final.append(acc)
+            return
+        # Can I insert open?
+        if openCount < n:
+            backtrack(openCount + 1, closeCount, acc + "(")
+        # Can I insert closed?
+        if closeCount < n and closeCount < openCount:
+            backtrack(openCount, closeCount + 1, acc + ")")
+        return
+    backtrack(0, 0, "")
+    return final
+
+        
+        
+                
+
+
+
+        
