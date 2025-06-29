@@ -156,6 +156,64 @@ def checkInclusion(self, s1: str, s2: str) -> bool:
             if counts_s1.get(s2[r]) == counts_s2[s2[r]]:
                 matches += 1
     return False
+
+
+'''
+Minimum Window Substring
+Solved
+
+Given two strings s and t, return the shortest substring of s such that every character in t, including duplicates, is present in the substring. If such a substring does not exist, return an empty string "".
+
+You may assume that the correct output is always unique.
+'''
+def minWindow(s: str, t: str) -> str:
+    '''
+    I want to do the following:
+    1. Count all the letters in the src string.
+    2. Count the matches in the initial window.
+    3. Expand the window until the matches are what I 
+    need.
+    4. Shrink the window until the matches are no 
+    longer what I need or the length == len(src string)
+    5. Store this value. 
+    6. Continue from Step 3.
+    7. End at end of the string.
+    '''
+    
+    if len(t) > len(s):
+        return ""
+    if t == "":
+        return ""
+    if s == t:
+        return s
+    from collections import defaultdict
+    count_t = defaultdict(int)
+    count_s = defaultdict(int)
+    # Initial setup
+    for letter in t:
+        count_t[letter] += 1
+    
+    have, need = 0, len(set(t)) # Use set here since we count matches per letter.
+    result, result_length = [-1, -1], float('infinity')
+    l = 0
+    # Begin main algorithm
+    for r in range(len(s)):
+        count_s[s[r]] += 1
+        # Check if new matches
+        if s[r] in count_t and count_s[s[r]] == count_t.get(s[r]):
+            have += 1
+        # Try shrinking window
+        while have == need:
+            # See if new value.
+            if result_length > (r - l + 1):
+                result_length = (r -l + 1)
+                result = [l, r]
+            count_s[s[l]] -= 1
+            if s[l] in count_t and count_s[s[l]] < count_t.get(s[l]):
+                have -= 1
+            l += 1
+    l, r = result
+    return "" if result_length == float('infinity') else s[l:r+1]
             
 
 
