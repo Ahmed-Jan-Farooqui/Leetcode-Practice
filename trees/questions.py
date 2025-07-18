@@ -1,9 +1,9 @@
 # Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, val=0, left=None, right=None):
-#         self.val = val
-#         self.left = left
-#         self.right = right
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
 def invertTree(root: Optional[TreeNode]) -> Optional[TreeNode]:
     def _dfs(curr):
@@ -95,6 +95,169 @@ def isSubtree(root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
         return found_l or found_r
     
     return isSubtree(root, subRoot)
+
+def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+    '''
+        1. Find ancestors.
+        2. Return the last match between the two lists.
+    '''
+    def _findAncestors(curr, value, ancestors):
+        if curr is None:
+            return
+        ancestors.append(curr)
+        if value < curr.val:
+            return _findAncestors(curr.left, value ,ancestors)
+        if value > curr.val:
+            return _findAncestors(curr.right, value ,ancestors)
+        return
+    
+    ancestors_p = [] 
+    ancestors_q = [] 
+    _findAncestors(root, p.val, ancestors_p)
+    _findAncestors(root, q.val, ancestors_q)
+    count = 0
+    match_node = None
+    while count < len(ancestors_p) and count < len(ancestors_q):
+        if ancestors_p[count].val == ancestors_q[count].val:
+            match_node = ancestors_p[count]
+        count += 1
+    return match_node
+
+
+
+def levelOrder(root: Optional[TreeNode]) -> List[List[int]]:
+    '''
+        Simple BFS
+    '''
+    from queue import deque
+    if root is None:
+        return []
+    final = []
+    queue = deque()
+    queue.appendleft(root)
+    count = 1
+    while len(queue) > 0:
+        level = []
+        next_level_count = 0
+        for _ in range(count):
+            curr = queue.pop()
+            level.append(curr.val)
+            if curr.left is not None:
+                queue.appendleft(curr.left)
+                next_level_count += 1
+            if curr.right is not None:
+                queue.appendleft(curr.right)
+                next_level_count += 1
+        final.append(level)
+        count = next_level_count
+    return final
+
+
+def rightSideView(root: Optional[TreeNode]) -> List[int]:
+    '''
+        Basic idea: do BFS, and the last value at each level 
+        is visible from the right (assuming left, right insertion)
+    '''
+    from queue import deque
+    if root is None:
+        return []
+    queue = deque()
+    queue.appendleft(root)
+    final = []
+    count = 1
+    while len(queue) > 0:
+        next_level_count = 0
+        for idx in range(count):
+            curr = queue.pop()
+            if idx == count - 1:
+                final.append(curr.val)
+            if curr.left is not None:
+                queue.appendleft(curr.left)
+                next_level_count += 1
+            if curr.right is not None:
+                queue.appendleft(curr.right)
+                next_level_count += 1
+        count = next_level_count
+    return final
+
+
+
+def goodNodes(root: TreeNode) -> int:
+    '''
+        I only need to keep track of the last Good Node in a given path.
+        I also know the root is always Good, so will start with that.
+    '''
+    def _findGoodNodes(curr, last_good_node):
+        if curr is None:
+            return 0
+
+        if last_good_node is None:
+            return 1 + _findGoodNodes(curr.left, curr) + _findGoodNodes(curr.right, curr)
+
+        left_c, right_c = 0, 0
+        if curr.val >= last_good_node.val:
+            return 1 + _findGoodNodes(curr.left, curr) + _findGoodNodes(curr.right, curr)
+
+        return _findGoodNodes(curr.left, last_good_node) + _findGoodNodes(curr.right, last_good_node)
+    
+    return _findGoodNodes(root, None)
+
+def isValidBST(root: Optional[TreeNode]) -> bool:
+    '''
+        Use bounds.
+    '''
+    def _validBST(curr, left_bound, right_bound):
+        if curr is None:
+            return True
+        
+        if not (curr.val > left_bound and curr.val < right_bound):
+            return False
+
+        return (_validBST(curr.left, left_bound, curr.val) and _validBST(curr.right, curr.val, right_bound))
+
+    return _validBST(root, float('-inf'), float('inf'))
+
+
+
+def kthSmallest(root: Optional[TreeNode], k: int) -> int:
+    nodes = []
+    def _inOrderTraversal(curr):
+        if curr is None:
+            return
+        _inOrderTraversal(curr.left)
+        nodes.append(curr.val)
+        _inOrderTraversal(curr.right)
+        return
+    
+    _inOrderTraversal(root)
+    return nodes[k-1]
+
+
+# Did this myself. Took me a really long time but pretty proud.
+def buildTree(preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+    in_order_hash = {val : idx for idx, val in enumerate(inorder)}
+    pre_ord_idx = 0
+    def _constructNodes(l, r):
+        nonlocal pre_ord_idx
+        number = preorder[pre_ord_idx]
+        idx = in_order_hash[number]
+        node = TreeNode(number)
+        pre_ord_idx += 1
+
+        if l >= r:
+            return node
+        
+        # Split into two halves and continue.
+        if idx - 1 >= l:
+            node.left = _constructNodes(l, idx-1)
+        if idx+1 <= r:
+            node.right = _constructNodes(idx+1, r)
+        
+        return node
+    root = _constructNodes(0, len(inorder) - 1)
+    return root
+
+            
 
 
 
