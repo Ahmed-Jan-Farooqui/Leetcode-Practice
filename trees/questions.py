@@ -259,6 +259,56 @@ def buildTree(preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
 
             
 
+# Also did this myself. Pretty happy.
+class Codec:
+    
+    # Encodes a tree to a single string.
+    def serialize(self, root: Optional[TreeNode]) -> str:
+        from queue import deque
+        queue = deque()
+        queue.appendleft(root)
+        final = []
+        while len(queue) > 0:
+            curr = queue.pop()
+            if curr is not None:
+                queue.appendleft(curr.left)
+                queue.appendleft(curr.right)
+                final.append(curr.val)
+                continue
+            final.append(None)
+        print(final)
+        return str(final)
+        
+    # Decodes your encoded data to tree.
+    def deserialize(self, data: str) -> Optional[TreeNode]:
+        data = ast.literal_eval(data)
+        if data[0] == None:
+            return None
+        from queue import deque
+        queue = deque()
+        queue.appendleft(TreeNode(data[0]))
+        idx = 0
+        root = None
+        while len(queue) > 0:
+            curr = queue.pop()
+            
+            if root is None:
+                root = curr
+
+            if data[idx+1] is not None:
+                curr.left = TreeNode(data[idx+1])
+                queue.appendleft(curr.left)
+            else:
+                curr.left = None
+            
+            if data[idx+2] is not None:
+                curr.right = TreeNode(data[idx+2])
+                queue.appendleft(curr.right)
+            else:
+                curr.right = None
+            
+            idx += 2
+        return root
 
 
                 
